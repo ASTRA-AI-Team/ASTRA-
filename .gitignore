@@ -1,0 +1,7 @@
+logs_2/
+T5logs/
+results_2/
+intent_model_2/
+fine_tuned_t5/
+db.sqlite3
+scope

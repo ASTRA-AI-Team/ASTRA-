@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+}
+
+/* Body Style */
+body {
+    background-color: #f0f0f0; /* Light background outside the chatbox */
+}
+
+/* Main Div */
+.main-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Menu Toggle */
+.menuToggle {
+    position: absolute;
+    bottom: 30px;
+    height: 70px;
+    width: 70px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px #000;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.menuToggle i {
+    font-size: 50px;
+    color: #0f0f20;
+}
+
+/* Chat Container */
+.container {
+    height: 700px;
+    width: 500px;
+    border: 3px solid rgba(35, 80, 92, 0.5);
+    border-radius: 20px;
+    background: #fff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+/* Top Section (Agent Info) */
+.top-part {
+    height: 100px;
+    background: #0f0f20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    color: #fff;
+}
+
+.top-part i {
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.agent-details {
+    display: flex;
+    align-items: center;
+}
+
+.agent-details img {
+    height: 70px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+.agent-text {
+    margin-left: 10px;
+}
+
+.agent-text h3 {
+    font-size: 15px;
+}
+
+.agent-text p {
+    font-size: 11px;
+}
+
+.agent-text span {
+    color: #0f0;
+}
+
+/* Chat Section */
+.chart-section {
+    height: calc(100% - 150px);
+    padding: 20px;
+    background-color: #fff;
+    height: 520px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Left Part (Agent Message) */
+.left-part {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.left-part img {
+    height: 50px;
+    background: #0f0f20;
+    border-radius: 50%;
+}
+
+.left-part p {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+    font-size: 14px;
+    max-width: 250px;
+    word-wrap: break-word;
+}
+
+/* Right Part (User Message) */
+.right-part {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    position: relative; /* For speech bubble arrow alignment */
+}
+
+.right-part p {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 70%;
+    font-size: 14px;
+    word-wrap: break-word;
+    text-align: left;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Speech Bubble Arrow for User Messages */
+.right-part::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    border: 10px solid transparent;
+    border-left: 10px solid #007bff;
+    transform: translateY(-50%);
+}
+
+/* Bottom Section (Input & Send Button) */
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.bottom-section textarea {
+    height: 40px;
+    width: 90%;
+    color: #0f0f20;
+    padding: 5px;
+    resize: none;
+    outline: none;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    overflow-y: auto;
+}
+
+.send-btn {
+    height: 40px;
+    padding: 0 15px;
+    background-color: #0f0f20;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.send-btn:hover {
+    background-color: #555;
+}
+
+/* Microphone Button */
+#mic-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#mic-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+#mic-button:focus {
+    outline: none;
+}
+
+#mic-button:focus-visible {
+    outline: 3px solid #0056b3;
+}
+
+#mic-button i {
+    font-size: 30px;
+}
+
+#mic-button.active {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        height: 80vh;
+    }
+
+    .chart-section {
+        height: 60%;
+    }
+
+    #mic-button {
+        font-size: 20px;
+        padding: 10px;
+    }
+
+    .send-btn {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+}

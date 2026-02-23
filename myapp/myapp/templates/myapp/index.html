@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA Chat</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="main-div">
+        <div class="menuToggle"></div>
+        <div class="container">
+            <div class="top-part">
+                <div class="agent-details">
+                    <!-- Correct Image Path -->
+                    <img src="{% static 'images/profile.png' %}" alt="Profile Image">
+                    <div class="agent-text">
+                        <h3>ASTRA</h3>
+                        <p>Personal Assistant <span>(Online)</span></p>
+                    </div>
+                </div>
+                <i class='bx bx-x'></i>
+            </div>
+            
+            <!-- Chat Section -->
+            <div class="chart-section" id="chat-container">
+                <!-- Messages will appear here -->
+            </div>
+
+            <!-- Bottom Section: Text input and send button -->
+            <div class="bottom-section">
+                <textarea id="user-message" placeholder="Type a message..."></textarea>
+                <button class="send-btn" id="send-btn">Send</button>
+                <button id="mic-button">
+                    <i class="fa fa-microphone"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="chat">
+        <div id="messages"></div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script>
+        // Get required DOM elements
+        const sendButton = document.querySelector('.send-btn');
+        const textarea = document.querySelector('#user-message');
+        const chartSection = document.querySelector('.chart-section');
+        const micButton = document.getElementById('mic-button'); // Microphone button
+
+        // Function to create and display user message
+        function sendMessage() {
+            const userMessage = textarea.value.trim();
+            
+            // Check if the message is not empty
+            if (userMessage !== "") {
+                // Create a new div for the user's message
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.classList.add('right-part');
+
+                // Create a paragraph to hold the message text
+                const messageContent = document.createElement('p');
+                messageContent.textContent = userMessage;
+
+                // Append the message content to the user's message div
+                userMessageDiv.appendChild(messageContent);
+
+                // Add the message to the chat area
+                chartSection.appendChild(userMessageDiv);
+
+                // Scroll to the bottom of the chat section to show the new message
+                chartSection.scrollTop = chartSection.scrollHeight;
+
+                // Clear the textarea
+                textarea.value = "";
+
+                // Simulate sending the message to the chatbot or server
+                receiveBotMessage();  // Simulate receiving a bot response
+            }
+        }
+
+        // Function to simulate receiving a bot message
+        function receiveBotMessage() {
+            setTimeout(() => {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.classList.add('left-part');
+
+                // Create a paragraph for the bot's response
+                const botMessageContent = document.createElement('p');
+                botMessageContent.textContent = "Hello, this is a response from the bot!";
+
+                // Append the bot message to the bot message div
+                botMessageDiv.appendChild(botMessageContent);
+
+                // Add the bot message to the chat area
+                chartSection.appendChild(botMessageDiv);
+
+                // Scroll to the bottom of the chat section to show the bot message
+                chartSection.scrollTop = chartSection.scrollHeight;
+            }, 1000);  // Simulate a 1-second delay for bot response
+        }
+
+        // Event listener for the Send button
+        sendButton.addEventListener('click', sendMessage);
+
+        // Event listener for Enter key
+        textarea.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();  // Prevents the default newline behavior
+                sendMessage();
+            }
+        });
+
+        const messagesDiv = document.getElementById('messages');
+        let isListening = false;
+        let recognition;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                isListening = true;
+                micButton.classList.add('listening');  // Add a listening state to the icon
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                micButton.classList.remove('listening');  // Remove the listening state from the icon
+            };
+
+            recognition.onresult = (event) => {
+                let speechResult = event.results[0][0].transcript;
+                messagesDiv.innerHTML += `<p>You: ${speechResult}</p>`;
+                sendToBackend(speechResult);
+            };
+        } else {
+            alert('Your browser does not support speech recognition.');
+        }
+
+        // On click event to toggle between starting and stopping the speech recognition
+        micButton.onclick = () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        };
+
+        function sendToBackend(text) {
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.reply) {
+                    messagesDiv.innerHTML += `<p>Bot: ${data.reply}</p>`;
+                    speakText(data.reply);  // Convert bot reply to speech
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+    <script src="{% static 'myapp/script.js' %}"></script>
+</body>
+</html>

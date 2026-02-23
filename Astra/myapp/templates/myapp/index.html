@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA Chat</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="main-div">
+        <div class="menuToggle"></div>
+        <div class="container">
+            <div class="top-part">
+                <div class="agent-details">
+                    <img src="{% static 'images/profile.png' %}" alt="Profile Image">
+                    <div class="agent-text">
+                        <h3>ASTRA</h3>
+                        <p>Personal Assistant <span>(Online)</span></p>
+                    </div>
+                </div>
+                <i class='bx bx-x'></i>
+            </div>
+            
+            <div class="chart-section" id="chat-container">
+                <!-- Messages will appear here -->
+            </div>
+
+            <div class="bottom-section">
+                <textarea id="user-message" placeholder="Type a message..."></textarea>
+                <button class="send-btn" id="send-btn">Send</button>
+                <button id="mic-button">
+                    <i class="fa fa-microphone"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script>
+        const sendButton = document.querySelector('.send-btn');
+        const textarea = document.querySelector('#user-message');
+        const chartSection = document.querySelector('.chart-section');
+        const micButton = document.getElementById('mic-button');
+
+        // Function to create and display user message
+        function sendMessage() {
+            const userMessage = textarea.value.trim();
+            if (userMessage !== "") {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.classList.add('right-part');
+                const messageContent = document.createElement('p');
+                messageContent.textContent = userMessage;
+                userMessageDiv.appendChild(messageContent);
+                chartSection.appendChild(userMessageDiv);
+                chartSection.scrollTop = chartSection.scrollHeight;
+                textarea.value = "";
+
+                receiveBotMessage();
+            }
+        }
+
+        // Function to simulate receiving a bot message
+        // Function to receive and display the bot's message
+function receiveBotMessage(botResponse) {
+    setTimeout(() => {
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.classList.add('left-part'); // Style the bot's message
+
+        const botMessageContent = document.createElement('p');
+        botMessageContent.textContent = botResponse; // Use the actual response from the backend
+
+        botMessageDiv.appendChild(botMessageContent);
+        chartSection.appendChild(botMessageDiv);  // Append the new message to the chat container
+        chartSection.scrollTop = chartSection.scrollHeight; // Scroll to the latest message
+    }, 100);  // Delay the bot response by 1 second (you can adjust this)
+}
+
+
+        sendButton.addEventListener('click', sendMessage);
+
+        textarea.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        const messagesDiv = document.getElementById('messages');
+        let isListening = false;
+        let recognition;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                isListening = true;
+                micButton.classList.add('listening');
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                micButton.classList.remove('listening');
+            };
+
+            recognition.onresult = (event) => {
+                let speechResult = event.results[0][0].transcript;
+                textarea.value = speechResult;  // Set the transcribed text in the textarea
+                sendMessage();  // Send the transcribed message
+            };
+        } else {
+            alert('Your browser does not support speech recognition.');
+        }
+
+        micButton.onclick = () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        };
+
+        function sendToBackend(text) {
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.reply) {
+                    messagesDiv.innerHTML += `<p>Bot: ${data.reply}</p>`;
+                    speakText(data.reply);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+    <script src="{% static 'myapp/script.js' %}"></script>
+</body>
+</html>

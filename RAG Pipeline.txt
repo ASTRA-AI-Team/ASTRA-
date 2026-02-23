@@ -1,0 +1,8 @@
+Step 1 → Prepare dataset → chunk text
+Step 2 → Create embeddings
+Step 3 → Store in vector DB
+Step 4 → Build retrieval pipeline
+Step 5 → Connect to generator model
+Step 6 → Serve via Django API
+
+will create another branch in the existing git repository so that the project (original) remains unchanged. It is not as heavy as the t5 model as there's no retraining for every intent classification and storing giant checkpoints. We simply chunk the data into embeddings or small codes and tryna find the info from it. 
